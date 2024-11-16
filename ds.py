@@ -5,6 +5,7 @@ import scipy as sp
 import astropy as ap
 from astropy.table import Table, Column
 
+#speed of light in km/s
 c = 3e5
 
 def nr_doppler(wl_rest, v):
@@ -56,6 +57,22 @@ def rev_r_doppler(wl_rest, wl_obs):
     #negative velocity is towards observer
     v = c*((((wl_obs/wl_rest)**2)-1)/(((wl_obs/wl_rest)**2)+1))
     return v
+
+def deltav_from_specres(line, res):
+    """Calculate the error in velocity space for a specified line
+       given the resolution of a spectrograph"""
+
+    #calculate spectral resolution in wavelgnth space
+    dlam = line/res
+
+    #calculate velocity difference from line
+    perr = rev_r_doppler(line,line+dlam)
+    nerr = rev_r_doppler(line,line-dlam)
+
+    #get average value
+    err = (np.abs(nerr)+np.abs(perr))/2.0
+
+    return err
 
 #wl = np.array([8000])
 #wl=np.array([6355,6550,6783,7117,7234])
